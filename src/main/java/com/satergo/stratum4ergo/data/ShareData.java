@@ -11,6 +11,6 @@ public sealed interface ShareData permits ShareData.Fail, ShareData.Success {
 
 	record Fail(String jobId, String ipAddress, String workerName, BigInteger difficulty, String error) implements ShareData {}
 
-	record Success(String jobId, String ipAddress, String workerName, BigInteger difficulty, long height, long blockReward, String msg,
+	record Success(String jobId, String ipAddress, String workerName, BigInteger difficulty, long height, byte[] msg,
 				   long shareDiff, boolean blockDiff, BigDecimal blockDiffActual, byte[] blockHash, boolean blockHashInvalid) implements ShareData {}
 }

@@ -1,5 +1,6 @@
 package com.satergo.stratum4ergo;
 
+import com.satergo.stratum4ergo.data.MiningCandidate;
 import com.satergo.stratum4ergo.data.Options;
 import com.satergo.stratum4ergo.data.ShareData;
 import org.json.JSONObject;
@@ -69,9 +70,9 @@ public class Pool {
 	}
 
 	private boolean getBlockTemplate() {
-		JSONObject candidate = nodeInterface.miningCandidate();
-		candidate.put("height", candidate.getLong("h"));
-		candidate.put("version", options.data().protocolVersion); // unused
-		return jobManager.processTemplate(candidate);
+		return jobManager.processTemplate(MiningCandidate.fromJson(
+				nodeInterface.miningCandidate(),
+				options.data().protocolVersion // unused
+		));
 	}
 }

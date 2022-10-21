@@ -1,7 +1,7 @@
 package com.satergo.stratum4ergo;
 
+import com.satergo.stratum4ergo.data.MiningCandidate;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,15 +34,15 @@ public class BlockTemplate {
 
 	private final Set<Object> submissions = new HashSet<>();
 
-	public BlockTemplate(String jobId, JSONObject rpcData) {
+	public BlockTemplate(String jobId, MiningCandidate miningCandidate) {
 		this.jobId = jobId;
-		this.rpcData = rpcData;
-		this.target = rpcData.has("b") ? Utils.getBigInteger(rpcData, "b") : new BigInteger(rpcData.getString("bits"), 16);
+		this.candidate = miningCandidate;
+		this.target = miningCandidate.b();
 		this.difficulty = new BigDecimal(DIFF_1).divide(new BigDecimal(target), RoundingMode.DOWN).setScale(2, RoundingMode.DOWN);
-		this.msg = HexFormat.of().parseHex(rpcData.getString("msg"));
+		this.msg = miningCandidate.msg();
 	}
 
-	public JSONObject rpcData;
+	public MiningCandidate candidate;
 	public String jobId;
 	public BigInteger target;
 	public BigDecimal difficulty;
@@ -62,12 +62,12 @@ public class BlockTemplate {
 		if (jobParams != null) return jobParams;
 		return jobParams = jsonArray(
 				jobId,
-				rpcData.getLong("height"),
-				rpcData.getString("msg"),
+				candidate.height(),
+				HexFormat.of().formatHex(candidate.msg()),
 				"",
 				"",
-				rpcData.getInt("version"),
-				Utils.getBigInteger(rpcData, "b"),
+				candidate.version(),
+				candidate.b(),
 				"",
 				true
 		);

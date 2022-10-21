@@ -6,11 +6,7 @@ import org.json.JSONObject;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.HexFormat;
 
 public class Utils {
 
@@ -20,18 +16,6 @@ public class Utils {
 			array.put(o);
 		}
 		return array;
-	}
-
-	public static byte[] sha256(byte[] data) {
-		try {
-			return MessageDigest.getInstance("SHA-256").digest(data);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static byte[] sha256d(byte[] data) {
-		return sha256(sha256(data));
 	}
 
 	public static byte[] concat(byte[]... arrays) {
@@ -44,10 +28,6 @@ public class Utils {
 		return merged;
 	}
 
-	public static byte[] hexPart(String s, int bytes) {
-		return HexFormat.of().parseHex(s, 0, bytes * 2);
-	}
-
 	public static void reverse(ByteBuffer buffer) {
 		if (buffer.capacity() % 2 != 0) throw new IllegalArgumentException();
 
@@ -58,35 +38,8 @@ public class Utils {
 		}
 	}
 
-	public static ByteBuffer varInt(long n) {
-		if (n < 0xfdL)
-			return ByteBuffer.allocate(1).order(ByteOrder.LITTLE_ENDIAN)
-					.put((byte) n);
-		else if (n <= 0xffffL)
-			return ByteBuffer.allocate(3).order(ByteOrder.LITTLE_ENDIAN)
-					.put((byte) 0xfd).putShort((short) n);
-		else if (n <= 0xffffffffL)
-			return ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN)
-					.put((byte) 0xfe).putInt((int) n);
-		else
-			return ByteBuffer.allocate(9).order(ByteOrder.LITTLE_ENDIAN)
-					.put((byte) 0xff).putShort((short) n);
-	}
-
-	public static byte[] uint256BufferFromHash(String hex) {
-		byte[] fromHex = HexFormat.of().parseHex(hex);
-
-		if (fromHex.length != 32){
-			fromHex = Arrays.copyOf(fromHex, 32);
-		}
-
-		reverse(ByteBuffer.wrap(fromHex));
-
-		return fromHex;
-	}
-
 	/** @apiNote big-endian */
-	public static byte[] bytes(int value) {
+	public static byte[] intBytes(int value) {
 		return new byte[] {
 				(byte)(value >> 24),
 				(byte)(value >> 16),

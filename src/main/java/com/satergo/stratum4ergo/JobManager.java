@@ -2,9 +2,9 @@ package com.satergo.stratum4ergo;
 
 import com.satergo.stratum4ergo.counter.ExtraNonceCounter;
 import com.satergo.stratum4ergo.counter.JobCounter;
+import com.satergo.stratum4ergo.data.MiningCandidate;
 import com.satergo.stratum4ergo.data.Options;
 import com.satergo.stratum4ergo.data.ShareData;
-import org.json.JSONObject;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -70,10 +70,10 @@ public class JobManager {
 		extraNonce2Size = extraNoncePlaceholder.length - extraNonceCounter.size;
 	}
 
-	public void updateCurrentJob(JSONObject rpcData) {
+	public void updateCurrentJob(MiningCandidate miningCandidate) {
 		BlockTemplate blockTemplate = new BlockTemplate(
 				jobCounter.next(),
-				rpcData
+				miningCandidate
 		);
 
 		this.currentJob = blockTemplate;
@@ -86,14 +86,14 @@ public class JobManager {
 	/**
 	 * @return whether a new block was processed
 	 */
-	public boolean processTemplate(JSONObject rpcData) {
+	public boolean processTemplate(MiningCandidate candidate) {
 		boolean isNewBlock = currentJob == null;
 		// Block is new if it's the first one seen or if the hash is different and the height is higher
-		if (!isNewBlock && !currentJob.rpcData.getString("msg").equals(rpcData.getString("msg"))) {
+		if (!isNewBlock && !Arrays.equals(currentJob.candidate.msg(), candidate.msg())) {
 			isNewBlock = true;
 
 			// If new block is outdated/out-of-sync then return
-			if (rpcData.getLong("height") < currentJob.rpcData.getLong("height"))
+			if (candidate.height() < currentJob.candidate.height())
 				return false;
 		}
 
@@ -101,7 +101,7 @@ public class JobManager {
 
 		BlockTemplate blockTemplate = new BlockTemplate(
 				jobCounter.next(),
-				rpcData
+				candidate
 		);
 
 		currentJob = blockTemplate;
@@ -168,19 +168,19 @@ public class JobManager {
 
 		byte[] coinbase = job.serializeCoinbase(extraNonce1, extraNonce2);
 
-		byte[] h = Utils.bytes(job.rpcData.getInt("height"));
-		byte[] i = Utils.bytes((int) BigInteger.valueOf(Utils.longValue(Arrays.copyOfRange(Utils.blake2b256(coinbase), 24, 32))).remainder(N(job.rpcData.getLong("height"))).longValue());
+		byte[] h = Utils.intBytes((int) job.candidate.height());
+		byte[] i = Utils.intBytes((int) BigInteger.valueOf(Utils.longValue(Arrays.copyOfRange(Utils.blake2b256(coinbase), 24, 32))).remainder(N(job.candidate.height())).longValue());
 		byte[] e = Arrays.copyOfRange(Utils.blake2b256(Utils.concat(
 				i, h, M
 		)), 1, 32);
-		List<byte[]> J = Arrays.stream(generateIndexes(Utils.concat(e, coinbase), job.rpcData.getLong("height"))).mapToObj(Utils::bytes).toList();
+		List<byte[]> J = Arrays.stream(generateIndexes(Utils.concat(e, coinbase), job.candidate.height())).mapToObj(Utils::intBytes).toList();
 		BigInteger f = J.stream().map(item -> new BigInteger(Utils.blake2b256(Arrays.copyOfRange(Utils.concat(item, h, M), 1, 32))))
 				.reduce(BigInteger::add)
 				.orElseThrow();
 		BigInteger fh = new BigInteger(Utils.blake2b256(Utils.padStart(f.toByteArray(), 32)));
 		byte[] blockHash;
 		// Check if share is a block candidate (matched network difficulty)
-		if (Utils.getBigInteger(job.rpcData, "b").compareTo(fh) >= 0) {
+		if (job.candidate.b().compareTo(fh) >= 0) {
 			// Must submit solution
 			blockHash = Utils.padStart(f.toByteArray(), 32);
 		} else {
@@ -197,9 +197,8 @@ public class JobManager {
 				ipAddress,
 				workerName,
 				difficulty,
-				job.rpcData.getLong("height"),
-				job.rpcData.getLong("coinbasevalue"),
-				job.rpcData.getString("msg"),
+				job.candidate.height(),
+				job.candidate.msg(),
 				1,
 				false,
 				job.difficulty,
