@@ -1,0 +1,21 @@
+plugins {
+    id 'java-library'
+    id 'application'
+}
+
+application.mainClass = "com.satergo.stratum4ergo.CLI"
+
+group 'com.satergo'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.GuyPaddock:JStratum:1.0b'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+
+    runtimeClasspath 'org.slf4j:slf4j-simple:2.0.3'
+}
