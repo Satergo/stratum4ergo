@@ -25,7 +25,7 @@ public class NodeInterface {
 		try {
 			return http.send(req("/info").build(), HttpResponse.BodyHandlers.discarding()).statusCode() == 200;
 		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
+			return false;
 		}
 	}
 

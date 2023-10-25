@@ -1,21 +1,27 @@
 plugins {
     id 'java-library'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 application.mainClass = "com.satergo.stratum4ergo.CLI"
 
 group 'com.satergo'
-version '1.0.0'
+version '0.0.1'
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven {
+        url 'https://jitpack.io'
+        content {
+            includeGroup 'com.github.Satergo'
+        }
+    }
 }
 
 dependencies {
-    implementation 'com.github.GuyPaddock:JStratum:1.0b'
+    implementation 'com.github.Satergo:JStratum:b3ad654112'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
-    runtimeClasspath 'org.slf4j:slf4j-simple:2.0.3'
+    runtimeOnly 'org.slf4j:slf4j-simple:2.0.3'
 }

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.ConnectException;
 import java.util.HexFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -30,10 +31,10 @@ public class Pool {
 	public void start() throws IOException {
 		nodeInterface = new NodeInterface(options.nodeApiUrl());
 		if (!nodeInterface.isOnline())
-			throw new IllegalStateException("node is offline");
+			throw new ConnectException("node is offline");
 		JSONObject info = nodeInterface.info();
 		options.data().protocolVersion = info.getJSONObject("parameters").getInt("blockVersion");
-		options.data().difficulty = Utils.getBigInteger(info, "difficulty").multiply(new BigInteger(String.valueOf(options.difficultyMultiplier())));
+		options.data().difficulty = Utils.getBigInteger(info, "difficulty").multiply(BigInteger.valueOf(options.difficultyMultiplier()));
 		setupJobManager();
 		getBlockTemplate();
 		Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {

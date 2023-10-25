@@ -11,7 +11,7 @@ public class CLI {
 
 	public static void main(String[] args) throws IOException {
 		Properties properties = new Properties();
-		properties.load(new FileReader("cli.properties", StandardCharsets.UTF_8));
+		properties.load(new FileReader(args.length == 0 ? "cli.properties" : args[0], StandardCharsets.UTF_8));
 		Options options = Options.fromProperties(properties);
 		ErgoStratumServer server = new ErgoStratumServer(options);
 		int port = Integer.parseInt(properties.getProperty("port"));
