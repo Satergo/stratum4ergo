@@ -13,6 +13,6 @@ public record MiningCandidate(byte[] msg, long height, int version, BigInteger b
 				HexFormat.of().parseHex(obj.getString("msg")),
 				obj.getInt("h"),
 				version,
-				obj.has("b") ? Utils.getBigInteger(obj, "b") : null);
+				obj.has("b") ? obj.getBigInteger("b") : null);
 	}
 }

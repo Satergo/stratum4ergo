@@ -34,10 +34,10 @@ public class Pool {
 			throw new ConnectException("node is offline");
 		JSONObject info = nodeInterface.info();
 		options.data().protocolVersion = info.getJSONObject("parameters").getInt("blockVersion");
-		options.data().difficulty = Utils.getBigInteger(info, "difficulty").multiply(BigInteger.valueOf(options.difficultyMultiplier()));
+		options.data().difficulty = info.getBigInteger("difficulty").multiply(BigInteger.valueOf(options.difficultyMultiplier()));
 		setupJobManager();
 		getBlockTemplate();
-		Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
 			if (getBlockTemplate()) {
 				System.out.println("Found block with polling");
 			}
@@ -67,7 +67,7 @@ public class Pool {
 	}
 
 	private void submitBlock(ShareData shareData, byte[] nonce) {
-		nodeInterface.solution(HexFormat.of().formatHex(nonce));
+		nodeInterface.sendSolution(HexFormat.of().formatHex(nonce));
 	}
 
 	private boolean getBlockTemplate() {

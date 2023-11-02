@@ -44,13 +44,11 @@ public class ErgoStratumServer extends StratumTcpServer {
 		};
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	@Override
 	protected void acceptConnection(StratumTcpServerConnection connection) {
 		getConnections().put(connection.getConnectionId(), connection);
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public void broadcastMiningJob(BlockTemplate blockTemplate) {
 		getConnections().asMap().forEach((k, v) -> v.sendResponse(Announcement.miningJob(blockTemplate)));
 	}

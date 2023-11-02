@@ -25,3 +25,25 @@ dependencies {
 
     runtimeOnly 'org.slf4j:slf4j-simple:2.0.3'
 }
+
+processResources {
+    def file = new File(temporaryDir, "version.txt")
+    doFirst {
+        file.getParentFile().mkdirs()
+        file.write(project.version as String)
+    }
+    from file
+    // this file needs to exist in src/main/resources or this task won't run
+    // to prevent it from being included in the jar, it is excluded here
+    exclude "dummy.txt"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// Make builds reproducible
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}

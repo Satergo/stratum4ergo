@@ -53,7 +53,7 @@ public class NodeInterface {
 		}
 	}
 
-	public boolean solution(String nonce) {
+	public boolean sendSolution(String nonce) {
 		try {
 			JSONObject postBody = new JSONObject();
 			postBody.put("n", nonce);

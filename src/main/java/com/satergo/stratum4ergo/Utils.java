@@ -2,9 +2,7 @@ package com.satergo.stratum4ergo;
 
 import org.bouncycastle.jcajce.provider.digest.Blake2b;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -97,13 +95,5 @@ public class Utils {
 		byte[] b = new byte[targetLength];
 		System.arraycopy(bytes, 0, b, targetLength - bytes.length, bytes.length);
 		return b;
-	}
-
-	public static BigInteger getBigInteger(JSONObject obj, String key) throws NumberFormatException {
-		Object val = obj.get(key);
-		if (val instanceof Long l) return BigInteger.valueOf(l);
-		else if (val instanceof Integer i) return BigInteger.valueOf(i);
-		else if (val instanceof String s) return new BigInteger(s);
-		throw new IllegalArgumentException("invalid type");
 	}
 }
