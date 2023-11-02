@@ -1,7 +1,7 @@
 plugins {
-    id 'java-library'
-    id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+	id 'java-library'
+	id 'application'
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 application.mainClass = "com.satergo.stratum4ergo.CLI"
@@ -10,40 +10,40 @@ group 'com.satergo'
 version '0.0.1'
 
 repositories {
-    mavenCentral()
-    maven {
-        url 'https://jitpack.io'
-        content {
-            includeGroup 'com.github.Satergo'
-        }
-    }
+	mavenCentral()
+	maven {
+		url 'https://jitpack.io'
+		content {
+			includeGroup 'com.github.Satergo'
+		}
+	}
 }
 
 dependencies {
-    implementation 'com.github.Satergo:JStratum:b3ad654112'
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+	implementation 'com.github.Satergo:JStratum:b3ad654112'
+	implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
-    runtimeOnly 'org.slf4j:slf4j-simple:2.0.3'
+	runtimeOnly 'org.slf4j:slf4j-simple:2.0.3'
 }
 
 processResources {
-    def file = new File(temporaryDir, "version.txt")
-    doFirst {
-        file.getParentFile().mkdirs()
-        file.write(project.version as String)
-    }
-    from file
-    // this file needs to exist in src/main/resources or this task won't run
-    // to prevent it from being included in the jar, it is excluded here
-    exclude "dummy.txt"
+	def file = new File(temporaryDir, "version.txt")
+	doFirst {
+		file.getParentFile().mkdirs()
+		file.write(project.version as String)
+	}
+	from file
+	// this file needs to exist in src/main/resources or this task won't run
+	// to prevent it from being included in the jar, it is excluded here
+	exclude "dummy.txt"
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+	options.encoding = 'UTF-8'
 }
 
 // Make builds reproducible
 tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
 }

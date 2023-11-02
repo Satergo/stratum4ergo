@@ -38,8 +38,12 @@ public class Pool {
 		setupJobManager();
 		getBlockTemplate();
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-			if (getBlockTemplate()) {
-				System.out.println("Found block with polling");
+			try {
+				if (getBlockTemplate()) {
+					System.out.println("Found block with polling");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}, 0, options.blockRefreshInterval(), TimeUnit.MILLISECONDS);
 	}
